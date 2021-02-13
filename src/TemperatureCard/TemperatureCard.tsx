@@ -2,6 +2,12 @@ import React, { useEffect, useState } from "react";
 import useService from "../useService";
 import ApiService from "../Api.service";
 import TemperatureCardService from "./TemperatureCard.service";
+import {
+  MainTemperature,
+  RefreshButton,
+  StyledTemperatureCard,
+  TemperatureDescription
+} from "./TemperatureCard.style";
 
 export const TemperatureCard: React.FC = () => {
   const apiService = useService(ApiService);
@@ -24,40 +30,24 @@ export const TemperatureCard: React.FC = () => {
   }, []);
 
   return (
-    <div style={{ border: "3px solid #fff", padding: "24px" }}>
+    <StyledTemperatureCard>
       {temperature !== undefined && (
         <>
-          <div
-            style={{
-              fontSize: "44px",
-              fontWeight: "bold",
-              marginBottom: "8px"
-            }}
-          >
-            {temperature} °C
-          </div>
+          <MainTemperature>{temperature} °C</MainTemperature>
+
           <div>
             {temperatureCardService.fromCelsiusToFahrenheit(temperature)} °F
           </div>
 
-          <div
-            style={{
-              fontSize: "24px",
-              marginTop: "8px"
-            }}
-          >
+          <TemperatureDescription>
             {temperatureCardService.getTemperatureDescription(temperature)}
-          </div>
+          </TemperatureDescription>
         </>
       )}
 
-      <button
-        style={{ fontSize: "24px", marginTop: "24px" }}
-        onClick={fetchTemperature}
-        disabled={loading}
-      >
+      <RefreshButton onClick={fetchTemperature} disabled={loading}>
         {loading ? "Loading..." : "Refresh"}
-      </button>
-    </div>
+      </RefreshButton>
+    </StyledTemperatureCard>
   );
 };
