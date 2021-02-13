@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
-import useService from "../useService";
-import ApiService from "../Api.service";
-import TemperatureCardService from "./TemperatureCard.service";
+import React from "react";
+import { withMemoizedController } from "../withController";
+import { useTemperatureCardController } from "./TemperatureCard.controller";
 import {
   MainTemperature,
   RefreshButton,
@@ -9,45 +8,33 @@ import {
   TemperatureDescription
 } from "./TemperatureCard.style";
 
-export const TemperatureCard: React.FC = () => {
-  const apiService = useService(ApiService);
-  const temperatureCardService = useService(TemperatureCardService);
-
-  const [loading, toggleLoading] = useState(true);
-  const [temperature, setTemperature] = useState<number | undefined>();
-
-  const fetchTemperature = async () => {
-    toggleLoading(true);
-
-    const temp = await apiService.getTemperature();
-
-    setTemperature(temp);
-    toggleLoading(false);
-  };
-
-  useEffect(() => {
-    fetchTemperature();
-  }, []);
-
-  return (
+export const TemperatureCard = withMemoizedController(
+  useTemperatureCardController,
+  ({
+    loading,
+    celsiusTemperature,
+    fahrenheitTemperature,
+    temperatureDescription,
+    onRefreshButtonClick
+  }) => (
     <StyledTemperatureCard>
-      {temperature !== undefined && (
-        <>
-          <MainTemperature>{temperature} °C</MainTemperature>
-
-          <div>
-            {temperatureCardService.fromCelsiusToFahrenheit(temperature)} °F
-          </div>
-
-          <TemperatureDescription>
-            {temperatureCardService.getTemperatureDescription(temperature)}
-          </TemperatureDescription>
-        </>
+      {celsiusTemperature !== undefined && (
+        <MainTemperature>{celsiusTemperature} °C</MainTemperature>
       )}
 
-      <RefreshButton onClick={fetchTemperature} disabled={loading}>
+      {fahrenheitTemperature !== undefined && (
+        <div>{fahrenheitTemperature} °F</div>
+      )}
+
+      {temperatureDescription && (
+        <TemperatureDescription>
+          {temperatureDescription}
+        </TemperatureDescription>
+      )}
+
+      <RefreshButton onClick={onRefreshButtonClick} disabled={loading}>
         {loading ? "Loading..." : "Refresh"}
       </RefreshButton>
     </StyledTemperatureCard>
-  );
-};
+  )
+);
