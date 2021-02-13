@@ -1,4 +1,5 @@
 import React from "react";
+import { withMemoizedController } from "../withController";
 import { useTemperatureCardController } from "./TemperatureCard.controller";
 import {
   MainTemperature,
@@ -7,16 +8,15 @@ import {
   TemperatureDescription
 } from "./TemperatureCard.style";
 
-export const TemperatureCard = () => {
-  const {
+export const TemperatureCard = withMemoizedController(
+  useTemperatureCardController,
+  ({
     loading,
     celsiusTemperature,
     fahrenheitTemperature,
     temperatureDescription,
     onRefreshButtonClick
-  } = useTemperatureCardController();
-
-  return (
+  }) => (
     <StyledTemperatureCard>
       {celsiusTemperature !== undefined && (
         <MainTemperature>{celsiusTemperature} °C</MainTemperature>
@@ -36,5 +36,5 @@ export const TemperatureCard = () => {
         {loading ? "Loading..." : "Refresh"}
       </RefreshButton>
     </StyledTemperatureCard>
-  );
-};
+  )
+);
